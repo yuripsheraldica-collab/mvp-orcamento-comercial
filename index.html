@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Propostas - Grupo Cipriano Ayala</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark" id="body-root">
+
+  <div id="app">
+    
+    <!-- ========================================== -->
+    <!-- TELA 1: LOGIN COMERCIAL                    -->
+    <!-- ========================================== -->
+    <section id="view-login" class="view-section" data-view="login">
+      <div class="login-container">
+        <div class="login-card">
+          <div class="login-logo-wrapper">
+            <!-- SVG Logo adaptável -->
+            <svg class="brand-logo" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="#0088ff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 58 20 A 26 26 0 1 0 58 60" />
+                <path d="M 58 20 L 76 68" />
+                <circle cx="40" cy="40" r="8" fill="#0088ff" stroke="none" />
+              </g>
+              <g font-family="'Inter', sans-serif" font-weight="700">
+                <text x="100" y="27" font-size="14" fill="var(--logo-muted)" font-weight="500" letter-spacing="2">GRUPO</text>
+                <text x="100" y="49" font-size="20" fill="var(--logo-text)" letter-spacing="1">CIPRIANO</text>
+                <text x="100" y="70" font-size="20" fill="var(--logo-text)" letter-spacing="1">AYALA</text>
+              </g>
+            </svg>
+          </div>
+          
+          <h2 class="login-title">Acesso Comercial</h2>
+          <p class="login-subtitle">Insira o CNPJ da empresa para acessar o gerador de propostas.</p>
+          
+          <form id="login-form">
+            <div class="form-group">
+              <label for="login-cnpj">CNPJ do Grupo</label>
+              <input 
+                type="text" 
+                id="login-cnpj" 
+                placeholder="00.000.000/0000-00" 
+                required 
+                maxlength="18"
+                autocomplete="off"
+              >
+              <span class="input-hint">Dica para teste: Clique no botão de login rápido abaixo</span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+              Acessar Painel
+            </button>
+          </form>
+          
+          <div class="login-divider">ou</div>
+          
+          <button id="btn-quick-login" class="btn btn-secondary btn-block">
+            Login Rápido (Homologação)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TELA 2: PAINEL COMERCIAL (CRM / GERADOR)   -->
+    <!-- ========================================== -->
+    <section id="view-comercial" class="view-section" data-view="comercial">
+      <header class="dashboard-header no-print">
+        <div class="header-brand">
+          <svg class="brand-logo" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" stroke="#0088ff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 58 20 A 26 26 0 1 0 58 60" />
+              <path d="M 58 20 L 76 68" />
+              <circle cx="40" cy="40" r="8" fill="#0088ff" stroke="none" />
+            </g>
+            <g font-family="'Inter', sans-serif" font-weight="700">
+              <text x="100" y="27" font-size="14" fill="var(--logo-muted)" font-weight="500" letter-spacing="2">GRUPO</text>
+              <text x="100" y="49" font-size="20" fill="var(--logo-text)" letter-spacing="1">CIPRIANO</text>
+              <text x="100" y="70" font-size="20" fill="var(--logo-text)" letter-spacing="1">AYALA</text>
+            </g>
+          </svg>
+        </div>
+        
+        <div class="header-actions">
+          <span class="user-badge">
+            <span class="badge-dot"></span>
+            Comercial Ativo
+          </span>
+          <button id="btn-logout" class="btn btn-outline btn-sm">Sair</button>
+        </div>
+      </header>
+      
+      <div class="dashboard-layout">
+        <!-- Sidebar: Lista de Propostas -->
+        <aside class="dashboard-sidebar no-print">
+          <div class="sidebar-header">
+            <h3>Propostas Recentes</h3>
+            <span class="proposal-count" id="lbl-proposal-count">0</span>
+          </div>
+          
+          <div class="sidebar-search">
+            <input type="text" id="search-proposals" placeholder="Buscar por cliente...">
+          </div>
+          
+          <div class="proposal-list" id="lst-proposals">
+            <!-- Carregado via Javascript -->
+            <div class="list-empty">Nenhuma proposta cadastrada.</div>
+          </div>
+        </aside>
+        
+        <!-- Main Content: Formulário da Proposta -->
+        <main class="dashboard-content">
+          <div class="content-header no-print">
+            <h1 id="form-title">Nova Proposta Comercial</h1>
+            <p>Preencha os campos abaixo para gerar um link de proposta customizado para o seu cliente.</p>
+          </div>
+          
+          <form id="proposal-form" class="proposal-editor-form">
+            <!-- Card 1: Dados do Cliente -->
+            <div class="form-card">
+              <div class="card-header">
+                <div class="step-num">1</div>
+                <h2>Dados do Cliente (Empresa)</h2>
+              </div>
+              
+              <div class="card-body">
+                <div class="form-grid col-3">
+                  <div class="form-group">
+                    <label for="client-cnpj">CNPJ do Cliente</label>
+                    <div class="input-with-button">
+                      <input type="text" id="client-cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
+                      <button type="button" id="btn-fetch-cnpj" class="btn btn-accent btn-sm">
+                        Buscar
+                      </button>
+                    </div>
+                  </div>
+                  <div class="form-group col-span-2">
+                    <label for="client-name">Razão Social</label>
+                    <input type="text" id="client-name" placeholder="Razão Social da Empresa" required>
+                  </div>
+                </div>
+                
+                <div class="form-grid col-2">
+                  <div class="form-group">
+                    <label for="client-trade-name">Nome Fantasia (Opcional)</label>
+                    <input type="text" id="client-trade-name" placeholder="Nome Fantasia">
+                  </div>
+                  <div class="form-group">
+                    <label for="client-cep">CEP</label>
+                    <input type="text" id="client-cep" placeholder="00000-000" maxlength="9">
+                  </div>
+                </div>
+                
+                <div class="form-grid col-4">
+                  <div class="form-group col-span-2">
+                    <label for="client-address">Endereço (Logradouro)</label>
+                    <input type="text" id="client-address" placeholder="Av, Rua, etc.">
+                  </div>
+                  <div class="form-group">
+                    <label for="client-number">Número</label>
+                    <input type="text" id="client-number" placeholder="123">
+                  </div>
+                  <div class="form-group">
+                    <label for="client-complement">Complemento</label>
+                    <input type="text" id="client-complement" placeholder="Sala, bloco, etc.">
+                  </div>
+                </div>
+
+                <div class="form-grid col-3">
+                  <div class="form-group">
+                    <label for="client-neighborhood">Bairro</label>
+                    <input type="text" id="client-neighborhood" placeholder="Bairro">
+                  </div>
+                  <div class="form-group">
+                    <label for="client-city">Cidade</label>
+                    <input type="text" id="client-city" placeholder="Cidade">
+                  </div>
+                  <div class="form-group">
+                    <label for="client-state">Estado (UF)</label>
+                    <input type="text" id="client-state" placeholder="SP" maxlength="2">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Card 2: Dados do Responsável -->
+            <div class="form-card">
+              <div class="card-header">
+                <div class="step-num">2</div>
+                <h2>Dados do Responsável pela Assinatura</h2>
+              </div>
+              
+              <div class="card-body">
+                <div class="form-grid col-3">
+                  <div class="form-group col-span-2">
+                    <label for="rep-name">Nome do Responsável / Assinante</label>
+                    <input type="text" id="rep-name" placeholder="Nome completo de quem assina" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="rep-role">Cargo / Função</label>
+                    <input type="text" id="rep-role" placeholder="Diretor, Sócio, etc." required>
+                  </div>
+                </div>
+                
+                <div class="form-grid col-3">
+                  <div class="form-group">
+                    <label for="rep-email">E-mail de Contato</label>
+                    <input type="email" id="rep-email" placeholder="email@empresa.com" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="rep-phone">Telefone</label>
+                    <input type="text" id="rep-phone" placeholder="(00) 0000-0000" maxlength="14">
+                  </div>
+                  <div class="form-group">
+                    <label for="rep-whatsapp">WhatsApp (Notificações)</label>
+                    <input type="text" id="rep-whatsapp" placeholder="(00) 00000-0000" maxlength="15" required>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Escopo de Serviços e Preços -->
+            <div class="form-card">
+              <div class="card-header">
+                <div class="step-num">3</div>
+                <h2>Serviços Contratados & Valores</h2>
+              </div>
+              
+              <div class="card-body">
+                <div class="services-table-wrapper">
+                  <table class="services-table" id="tbl-services">
+                    <thead>
+                      <tr>
+                        <th>Serviço / Escopo</th>
+                        <th width="150">Valor Unitário</th>
+                        <th width="100">Quantidade</th>
+                        <th width="150">Total</th>
+                        <th width="120" class="comissao-column">Comissão (%)</th>
+                        <th width="80">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="services-tbody">
+                      <!-- Linhas dinâmicas inseridas por JS -->
+                    </tbody>
+                  </table>
+                </div>
+                <button type="button" id="btn-add-service" class="btn btn-outline btn-sm mt-3">
+                  + Adicionar Serviço
+                </button>
+              </div>
+            </div>
+
+            <!-- Card 4: Resumo e Fechamento -->
+            <div class="form-card">
+              <div class="card-header">
+                <div class="step-num">4</div>
+                <h2>Resumo Financeiro & Condições</h2>
+              </div>
+              
+              <div class="card-body">
+                <div class="summary-wrapper">
+                  <!-- Bloco de Comissão (Restrito ao Comercial) -->
+                  <div class="financial-summary-grid">
+                    <div class="summary-box">
+                      <span class="summary-label">Valor Bruto Total</span>
+                      <span class="summary-value" id="lbl-total-gross">R$ 0,00</span>
+                    </div>
+                    <div class="summary-box comissao-box">
+                      <span class="summary-label">Comissão Comercial Total</span>
+                      <span class="summary-value" id="lbl-total-commission">R$ 0,00</span>
+                    </div>
+                    <div class="summary-box net-box">
+                      <span class="summary-label">Valor Líquido do Grupo</span>
+                      <span class="summary-value" id="lbl-total-net">R$ 0,00</span>
+                    </div>
+                  </div>
+
+                  <hr class="summary-divider">
+
+                  <div class="form-grid col-2">
+                    <div class="form-group">
+                      <label for="payment-terms">Condições de Pagamento</label>
+                      <textarea id="payment-terms" rows="3" placeholder="Ex: Faturamento mensal em até 10 dias após a prestação de serviços via boleto bancário." required></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="proposal-validity">Validade da Proposta (Dias)</label>
+                      <input type="number" id="proposal-validity" value="15" min="1" required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Ação do Formulário -->
+            <div class="form-actions no-print">
+              <button type="button" id="btn-cancel-proposal" class="btn btn-secondary">Limpar / Nova</button>
+              <button type="submit" id="btn-submit-proposal" class="btn btn-primary">Disponibilizar Proposta</button>
+            </div>
+          </form>
+        </main>
+      </div>
+
+      <!-- Modal de Sucesso da Proposta -->
+      <div id="modal-success" class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-icon">✓</div>
+          <h2>Proposta Disponibilizada!</h2>
+          <p>A proposta foi salva e está pronta para acesso do cliente.</p>
+          
+          <div class="share-box">
+            <label>Link de Acesso da Proposta</label>
+            <div class="copy-input-group">
+              <input type="text" id="share-link-input" readonly>
+              <button id="btn-copy-link" class="btn btn-accent">Copiar</button>
+            </div>
+          </div>
+          
+          <div class="modal-actions">
+            <button id="btn-share-whatsapp" class="btn btn-whatsapp btn-block">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.66.986 3.292 1.499 5.341 1.5c5.6 0 10.15-4.544 10.153-10.136.002-2.707-1.05-5.253-2.963-7.17C17.266 1.43 14.72 0.38 12.014 0.38 6.42 0.38 1.87 4.917 1.867 10.511c-.001 2.054.518 3.696 1.517 5.352L2.39 21.93l6.257-1.642z"/>
+              </svg>
+              Enviar via WhatsApp
+            </button>
+            <button id="btn-close-modal" class="btn btn-outline btn-block">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TELA 3: VISUALIZADOR DE PROPOSTA (CLIENTE) -->
+    <!-- ========================================== -->
+    <section id="view-cliente" class="view-section" data-view="cliente">
+      <div class="proposal-view-container">
+        
+        <!-- Header Flutuante de Ações (Apenas Tela, Oculto no Print) -->
+        <div class="proposal-action-bar no-print">
+          <button id="btn-back-to-admin" class="btn btn-secondary btn-sm hidden">
+            ← Voltar ao Comercial
+          </button>
+          <div class="action-buttons-right">
+            <button id="btn-print-pdf" class="btn btn-outline btn-sm">
+              Imprimir / Salvar PDF
+            </button>
+            <button id="btn-client-contact" class="btn btn-accent btn-sm">
+              Falar no WhatsApp
+            </button>
+          </div>
+        </div>
+
+        <!-- Documento Principal (Estilo Papel Corporativo) -->
+        <article class="proposal-card theme-light">
+          <!-- Cabeçalho Timbrado -->
+          <div class="proposal-header">
+            <div class="proposal-brand-logo">
+              <!-- SVG Logo -->
+              <svg class="brand-logo" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke="#0088ff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M 58 20 A 26 26 0 1 0 58 60" />
+                  <path d="M 58 20 L 76 68" />
+                  <circle cx="40" cy="40" r="8" fill="#0088ff" stroke="none" />
+                </g>
+                <g font-family="'Inter', sans-serif" font-weight="700">
+                  <text x="100" y="27" font-size="14" fill="#666" font-weight="500" letter-spacing="2">GRUPO</text>
+                  <text x="100" y="49" font-size="20" fill="#111" letter-spacing="1">CIPRIANO</text>
+                  <text x="100" y="70" font-size="20" fill="#111" letter-spacing="1">AYALA</text>
+                </g>
+              </svg>
+            </div>
+            
+            <div class="proposal-meta-box">
+              <div class="proposal-title-main">PROPOSTA COMERCIAL</div>
+              <div class="proposal-meta-item">
+                <span class="meta-lbl">Número:</span>
+                <span class="meta-val" id="client-view-prop-id">CA-2026-0000</span>
+              </div>
+              <div class="proposal-meta-item">
+                <span class="meta-lbl">Data de Emissão:</span>
+                <span class="meta-val" id="client-view-prop-date">12/06/2026</span>
+              </div>
+              <div class="proposal-meta-item">
+                <span class="meta-lbl">Validade:</span>
+                <span class="meta-val" id="client-view-prop-validity">15 dias</span>
+              </div>
+              <div class="proposal-meta-item" id="client-view-status-badge-container">
+                <span class="meta-lbl">Status:</span>
+                <span class="badge" id="client-view-prop-status">Pendente</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="proposal-divider-thick">
+
+          <!-- Bloco 1: Partes Envolvidas -->
+          <section class="proposal-section">
+            <h3 class="section-title">1. Partes Envolvidas</h3>
+            
+            <div class="parties-grid">
+              <div class="party-box">
+                <h4>CONTRATADA</h4>
+                <div class="party-details">
+                  <strong>GRUPO CIPRIANO AYALA</strong><br>
+                  CNPJ: 12.345.678/0001-90<br>
+                  São Paulo - SP
+                </div>
+              </div>
+              <div class="party-box">
+                <h4>CONTRATANTE</h4>
+                <div class="party-details">
+                  <strong id="client-view-company-name">RAZÃO SOCIAL DO CLIENTE</strong><br>
+                  <span id="client-view-company-cnpj">CNPJ: 00.000.000/0000-00</span><br>
+                  <span id="client-view-company-address">Endereço completo do cliente</span><br>
+                  <span id="client-view-company-rep">A/C: Nome do Responsável (Cargo)</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Bloco 2: Escopo de Serviços -->
+          <section class="proposal-section">
+            <h3 class="section-title">2. Escopo dos Serviços e Investimento</h3>
+            <p class="section-desc">A Contratada propõe a execução dos seguintes serviços especializados sob demanda e com as especificações listadas a seguir:</p>
+            
+            <table class="proposal-view-table">
+              <thead>
+                <tr>
+                  <th>Descrição dos Serviços Contratados</th>
+                  <th width="80" class="text-center">Qtd</th>
+                  <th width="140" class="text-right">Valor Unitário</th>
+                  <th width="140" class="text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody id="client-view-services-list">
+                <!-- Carregado via JS. IMPORTANTE: Sem dados de comissão! -->
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="text-right font-bold">Investimento Total Proposto</td>
+                  <td class="text-right font-bold color-primary text-lg" id="client-view-total-investment">R$ 0,00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <!-- Bloco 3: Condições Comerciais -->
+          <section class="proposal-section">
+            <h3 class="section-title">3. Condições Comerciais e Financeiras</h3>
+            <div class="terms-block">
+              <div class="term-item">
+                <strong>Condição de Pagamento:</strong>
+                <p id="client-view-payment-terms">Faturamento mensal em até 10 dias após a prestação de serviços via boleto bancário.</p>
+              </div>
+              <div class="term-item">
+                <strong>Início dos Serviços:</strong>
+                <p>Imediato, mediante assinatura deste instrumento de proposta comercial e alinhamento cronológico.</p>
+              </div>
+              <div class="term-item">
+                <strong>Validade desta Proposta:</strong>
+                <p>Os valores e condições aqui apresentados são válidos por <span id="client-view-validity-days">15</span> dias a partir da data de emissão.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Bloco 4: Aceite e Assinatura Digital -->
+          <section class="proposal-section signature-section">
+            <h3 class="section-title">4. Aceite da Proposta Comercial</h3>
+            <p class="section-desc no-print">Para manifestar seu de acordo e formalizar o início das operações do escopo contratado, preencha os dados abaixo e assine eletronicamente:</p>
+            
+            <!-- Visão de Assinatura Aberta (Apenas se Pendente) -->
+            <div id="signature-input-area" class="signature-form-box no-print">
+              <div class="form-grid col-2">
+                <div class="form-group">
+                  <label for="sign-client-name">Nome do Assinante Autorizado</label>
+                  <input type="text" id="sign-client-name" placeholder="Digite seu nome completo" required>
+                </div>
+                <div class="form-group">
+                  <label for="sign-client-cpf">CPF do Assinante</label>
+                  <input type="text" id="sign-client-cpf" placeholder="000.000.000-00" maxlength="14" required>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Assinatura Digital (Rubrica na Área Abaixo)</label>
+                <div class="signature-canvas-wrapper">
+                  <canvas id="signature-pad" width="600" height="150"></canvas>
+                  <button type="button" id="btn-clear-signature" class="btn btn-outline btn-xs">Limpar</button>
+                </div>
+              </div>
+
+              <div class="form-checkbox">
+                <input type="checkbox" id="chk-accept-terms" required>
+                <label for="chk-accept-terms">Declaro que li e concordo com o escopo de serviços, valores e termos descritos nesta Proposta Comercial.</label>
+              </div>
+              
+              <button type="button" id="btn-confirm-signature" class="btn btn-primary btn-block mt-3">
+                Assinar e Aceitar Proposta
+              </button>
+            </div>
+
+            <!-- Visão de Assinatura Concluída (Após Aceite ou se já Aceito) -->
+            <div id="signature-receipt-area" class="signature-receipt hidden">
+              <div class="receipt-success-badge">
+                <span class="check-icon">✓</span>
+                <div>
+                  <strong>Proposta Aceita Eletronicamente</strong><br>
+                  <span id="lbl-receipt-date">Assinada em 12/06/2026 às 11:45</span>
+                </div>
+              </div>
+              
+              <div class="signature-display-box">
+                <div class="signature-meta-details">
+                  <p><strong>Assinante:</strong> <span id="lbl-receipt-name">Nome Completo</span></p>
+                  <p><strong>CPF:</strong> <span id="lbl-receipt-cpf">000.000.000-00</span></p>
+                  <p><strong>Status:</strong> Assinatura Digital Validada em conformidade</p>
+                </div>
+                <div class="signature-image-container">
+                  <img id="signature-img-preview" alt="Assinatura Digital" style="max-height: 80px;">
+                </div>
+              </div>
+
+              <div class="signature-receipt-actions mt-3 no-print">
+                <button id="btn-client-share-back" class="btn btn-whatsapp btn-block">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.66.986 3.292 1.499 5.341 1.5c5.6 0 10.15-4.544 10.153-10.136.002-2.707-1.05-5.253-2.963-7.17C17.266 1.43 14.72 0.38 12.014 0.38 6.42 0.38 1.87 4.917 1.867 10.511c-.001 2.054.518 3.696 1.517 5.352L2.39 21.93l6.257-1.642z"/>
+                  </svg>
+                  Enviar Comprovante Assinado ao Comercial
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Rodapé do Documento -->
+          <footer class="proposal-doc-footer">
+            <p>Grupo Cipriano Ayala — Comercial | Proposta Gerada Eletronicamente via Portal de Propostas</p>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+  </div> <!-- Fim de #app -->
+
+  <!-- ========================================== -->
+  <!-- PAINEL DE HOMOLOGAÇÃO (DEVELOPER HELPER)    -->
+  <!-- ========================================== -->
+  <div id="homologation-tools" class="homologation-panel no-print">
+    <div class="homologation-header">
+      <h4>Ferramentas de Teste (MVP)</h4>
+      <button id="btn-toggle-homologation" class="btn-toggle-h">×</button>
+    </div>
+    <div class="homologation-body" id="homologation-body">
+      <p class="h-text">Use os atalhos rápidos abaixo para validar os fluxos da aplicação:</p>
+      
+      <div class="h-group">
+        <label>Comercial:</label>
+        <div class="h-buttons">
+          <button id="h-btn-login" class="btn btn-accent btn-xs">Login Comercial</button>
+          <button id="h-btn-fill" class="btn btn-secondary btn-xs">Preencher Proposta Exemplo</button>
+        </div>
+      </div>
+      
+      <div class="h-group">
+        <label>Simular Cliente:</label>
+        <div class="h-buttons">
+          <button id="h-btn-view-client" class="btn btn-primary btn-xs" disabled>Ver Proposta Ativa</button>
+          <button id="h-btn-reset-db" class="btn btn-outline btn-xs">Resetar Banco</button>
+        </div>
+      </div>
+      
+      <div class="h-status-box">
+        <strong>Status do Sistema:</strong>
+        <div id="h-status-details">Não autenticado</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
